@@ -10,8 +10,9 @@ function manageExclusions {
 }
 
 self=$(basename $0)
+grepOpts="-nI"
+partialWord=0
 depth=2
-ignorecase=0
 excludeDirs="-wholename /dev/null"
 excludeFiles="-wholename /dev/null"
 if [ $# -eq 0 ]; then
@@ -34,8 +35,12 @@ while [[ $# -gt 0 ]]; do
 		  shift
 		  shift
 		  ;;
-	  -i|--ignorecase)
-		  ignorecase=1
+	  -i|--ignoreCase)
+		  grepOpts+="i"
+		  shift
+		  ;;
+	  -p|--partial)
+		  partialWord=1;
 		  shift
 		  ;;
 	  -h|--help)
@@ -46,7 +51,8 @@ Arguments:
 \t-h, --help\n\t\tDisplay this manual
 \t-d <val>, --depth <val>\n\t\tThe number of directories deep a search should go. Default is 2.
 \t-e <val>, --exclude <val>\n\t\tDirectories that should be exluded from search. Default exclusions are $defaultExclude
-\t-i, --ignorecase\n\t\tMatch regardless of case
+\t-i, --ignoreCase\n\t\tCase agnostic search
+\t-p, --partial\n\t\tMatch keyphrase even if it is a part of another word
 Output:
 \tReturns a newline seperated list of file, line number, and line contents of each instance of the keyphrase across the project.
 Examples:
@@ -89,10 +95,8 @@ depthArgs=". -maxdepth $depth -mindepth 1"
 excludeArgs=" -type d ( $excludeDirs ) -prune"
 excludeArgs+=" -o -type f ( $excludeFiles ) -prune"
 
-grepOpts="-nI"
-#TODO add option for whole word search
-if [ $ignorecase = 1 ]; then
-	grepOpts+="i"
+if [ $partialWord = 0 ]; then
+	grepOpts+="w"
 fi
 grepCMD="grep $grepOpts "$keyphrase" {} +"
 
