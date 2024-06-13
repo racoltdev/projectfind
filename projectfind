@@ -9,25 +9,31 @@ function manageExclusions {
 	fi
 }
 
-function readExclusionFile {
+function parseFileWith {
+	func=$1
+	file=$2
+	pattern=$3
 	while IFS= read -r line; do
-    	manageExclusions $line
-	done < $1
+    	$func "$line" $pattern
+	done < $file
 }
 
 self=$(basename $0)
+# "n" print line number, "I" ignore binary files, "H" force printing file name
 grepOpts="-nIH"
 partialWord=0
 depth=2
+# It's easier to set defaults to this so that adding new items doesn't require checking if first exclusion or not
 excludeDirs="-wholename /dev/null"
 excludeFiles="-wholename /dev/null"
+
+# if number of arguments is 0
 if [ $# -eq 0 ]; then
 	printf "projectfind: No arguments supplied.\n\targ1, required: string to match\n\targ2, optional: depth of directory search. default = 2\n"
 fi
 
-#TODO add option to ignore defaults or just remove defaults
-#TODO add option to refer to file for project default exclusions
-while [[ $# -gt 0 ]]; do
+# while number of arguments is greater than 0
+while [ $# -gt 0 ]; do
   case $1 in
 	  -d|--depth)
 		  depth=$2
@@ -40,7 +46,7 @@ while [[ $# -gt 0 ]]; do
 		  shift
 		  ;;
 	  -r|--exclusionrules)
-		  readExclusionFile $2
+		  parseFileWith manageExclusions $2
 		  shift
 		  shift
 		  ;;
@@ -57,42 +63,8 @@ while [[ $# -gt 0 ]]; do
 		  shift
 		  ;;
 	  -h|--help)
-		  printf "projectfind\nSearches a project for a keyword or phrase.
-
-Usage: $self [keyphrase] [arguments]
-\tprojectfind expects a keyphrase followed by any additional arguments.
-
-Arguments:
-\t-h, --help\n\t\tDisplay this manual
-\t-d <val>, --depth <val>\n\t\tThe number of directories deep a search should go. Default is 2.
-\t-e <val>, --exclude <val>\n\t\tAny file or directory that should be excluded from search.
-\t-i, --ignorecase\n\t\tCase agnostic search.
-\t-p, --partial\n\t\tMatch keyphrase even if it is a part of another word.
-\t-r <filename>, --exclusionrules <filename>\n\t\tTakes a file containing a newline separated list as argument. Any files or directories in the list are excluded from the search. Useful if you search a project a lot or have some common system wide paths you exclude often.
-
-Output:
-\tReturns a newline seperated list of file, line number, and line contents of each instance of the keyphrase across the project.
-
-Examples:
-\t\$projectfind import
-\t\tFinds all instances of \"import\" in files up to 2 directories below current working directory
-\t\$projectfind main -d 1
-\t\tFinds all instances of \"main\" only in the current working directory
-\t\$projectfind include -e Doxyfile -e bin/
-\t\tFinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file
-\t\$projectfind todo -i
-\t\tCase agnostic search for \"todo\"
-\t\$projectfind import -p
-\t\tFinds instances of \"import\" as well as other words like \"imported\".
-\t\$projectfind exec -r .gitignore
-\t\tFinds instances of \"exec\", excluding anything listed in .gitignore.
-\t\$projectfind \"todo|TODO\"
-\t\tSearches for instances of \"todo\" or \"TODO\"
-\t\$projectfind include \<time.h\>
-\t\$projectfind include \"<time.h>\"
-\t\$projectfind \"include <time.h>\"
-\t\tThese all find any instance of \"include <time.h>\" across the project with depth 2
-"
+		  helpFile=$(dirname $(readlink -f $0))"/help.txt"
+		  parseFileWith printf $helpFile $self
 		  exit 1
 		  ;;
 	  -*|--*)
@@ -100,15 +72,12 @@ Examples:
 		  exit 1
 		  ;;
 	  *)
-		  #this adds a trailing whitespace
+		  #this adds a trailing whitespace. Must be handled later
 		  keyphrase+=$1" "
 		  shift
 		  ;;
   esac
 done
-
-#find sucks ass and I can't seperate out binary files cleanly and still have this work with fnames containing whitespace
-#Resolved with -I option to grep
 
 #strip trailing whitespace
 keyphrase=${keyphrase%?}

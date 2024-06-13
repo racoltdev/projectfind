@@ -1,0 +1,36 @@
+projectfind\n
+Searches a project for a keyword or phrase.\n
+\n
+Usage: %s [keyphrase] [arguments]\n
+\tprojectfind expects a keyphrase followed by any additional arguments.\n
+\n
+Arguments:\n
+\t-h, --help\n\t\tDisplay this manual\n
+\t-d <val>, --depth <val>\n\t\tThe number of directories deep a search should go. Default is 2.\n
+\t-e <val>, --exclude <val>\n\t\tAny file or directory glob that should be excluded from search.\n
+\t-i, --ignorecase\n\t\tCase agnostic search.\n
+\t-p, --partial\n\t\tMatch keyphrase even if it is a part of another word.\n
+\t-r <filename>, --exclusionrules <filename>\n\t\tTakes a file containing a newline separated list as argument. Any files or directories matched by globs in the list are excluded from the search. Useful if you search a project a lot or have some common system wide paths you exclude often.\n
+\n
+Output:\n
+\tReturns a newline seperated list of file, line number, and line contents of each instance of the keyphrase across the project.\n
+\n
+Examples:\n
+\t$projectfind import\n
+\t\tFinds all instances of \"import\" in files up to 2 directories below current working directory\n
+\t$projectfind main -d 1\n
+\t\tFinds all instances of \"main\" only in the current working directory\n
+\t$projectfind include -e Doxyfile -e bin/\n
+\t\tFinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file\n
+\t$projectfind todo -i\n
+\t\tCase agnostic search for \"todo\"\n
+\t$projectfind import -p\n
+\t\tFinds instances of \"import\" as well as other words like \"imported\".\n
+\t$projectfind exec -r .gitignore\n
+\t\tFinds instances of \"exec\", excluding anything listed in .gitignore.\n
+\t$projectfind \"todo|TODO\"\n
+\t\tSearches for instances of \"todo\" or \"TODO\"\n
+\t$projectfind include \<time.h\>\n
+\t$projectfind include \"<time.h>\"\n
+\t$projectfind \"include <time.h>\"\n
+\t\tThese all find any instance of \"include <time.h>\" across the project with depth 2\n\n
