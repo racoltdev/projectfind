@@ -1,5 +1,5 @@
 ### projectfind
-Searches a project for a keyword or phrase. projectfind is a bash script powered by find and grep. <\br>
+Searches a project for a keyword or phrase. projectfind is a bash script powered by find and grep. </br>
 It works on my debian install. If theres issues with it working on other platforms or shells, I might fix it. Open an issue to get it on my radar.
 
 ### Intro
