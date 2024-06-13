@@ -33,4 +33,4 @@ Examples:\n
 \t$projectfind include \<time.h\>\n
 \t$projectfind include \"<time.h>\"\n
 \t$projectfind \"include <time.h>\"\n
-\t\tThese all find any instance of \"include <time.h>\" across the project with depth 2\n\n
+\t\tThese all find any instance of \"include <time.h>\" across the project with depth 2\n
