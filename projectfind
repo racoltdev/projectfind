@@ -1,15 +1,28 @@
 #!/usr/bin/bash
+
+function manageExclusions {
+	prepend=" -o -name"
+	if [ ${1:0-1} = '/' ]; then
+		excludeDirs+="$prepend ${1%?}"
+	else
+		excludeFiles+="$prepend $1"
+	fi
+}
+
 self=$(basename $0)
 depth=2
 ignorecase=0
+excludeDirs=""
+excludeFiles=""
 if [ $# -eq 0 ]; then
 	printf "projectfind: No arguments supplied.\n\targ1, required: string to match\n\targ2, optional: depth of directory search. default = 2\n"
 fi
 
 #TODO add option to ignore defaults or just remove defaults
-#TODO add option to refer to file for exclusions
+#TODO add option to refer to file for project default exclusions
 defaultExclude="venv .venv .git"
-exclude="-name venv -o -name .venv -o -name .git"
+excludeDirs+="-name venv -o -name .venv -o -name .git"
+excludeFiles+="-name joe"
 while [[ $# -gt 0 ]]; do
   case $1 in
 	  -d|--depth)
@@ -18,8 +31,7 @@ while [[ $# -gt 0 ]]; do
 		  shift
 		  ;;
 	  -e|--exclude)
-		  #TODO differentiate between exclude files and exclude dirs with trailing /
-		  exclude+=" -o -name ${2}"
+		  manageExclusions $2
 		  shift
 		  shift
 		  ;;
@@ -43,7 +55,7 @@ Examples:
 \t\tfinds all instances of \"import\" in files up to 2 directories below current working directory
 \t\$projectfind main -d 1
 \t\tfinds all instances of \"main\" only in the current working directory
-\t\$projectfind include -e Doxyfile -e bin
+\t\$projectfind include -e Doxyfile -e bin/
 \t\tfinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file
 \t\$projectfind todo -i
 \t\tCase agnostic search for \"todo\"
@@ -70,8 +82,10 @@ done
 #find sucks ass and I can't seperate out binary files cleanly and still have this work with fnames containing whitespace
 keyphrase=${keyphrase%?}
 #TODO add option for whole word search
+#TODO create command constructor for whole word, ignore case, and if there are any exclusions or not
 if [ $ignorecase = 1 ]; then
-	find . -maxdepth $depth -mindepth 1 \( $exclude \) -prune -o -type f -exec grep -ni $keyphrase {} +
+	find . -maxdepth $depth -mindepth 1 -type d \( $excludeDirs \) -o -type f \( $excludeFiles \) -prune -o -type f -exec grep -ni $keyphrase {} +
 else
-	find . -maxdepth $depth -mindepth 1 \( $exclude \) -prune -o -type f -exec grep -n "$keyphrase" {} +
+	find . -maxdepth $depth -mindepth 1 -type d \( $excludeDirs \) -prune -o -type f \( $excludeFiles \) -prune -o -type f -exec grep -n "$keyphrase" {} +
 fi
+
