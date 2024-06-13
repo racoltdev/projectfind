@@ -1,9 +1,77 @@
 #!/usr/bin/bash
-depth=${2:-2}
+self=$(basename $0)
+depth=2
+ignorecase=0
 if [ $# -eq 0 ]; then
 	printf "projectfind: No arguments supplied.\n\targ1, required: string to match\n\targ2, optional: depth of directory search. default = 2\n"
 fi
-#find . -maxdepth $depth -mindepth 1 \( -name venv -o -name .venv \) -prune -o -exec grep -nw $1 {} +
+
+#TODO add option to ignore defaults or just remove defaults
+#TODO add option to refer to file for exclusions
+defaultExclude="venv .venv .git"
+exclude="-name venv -o -name .venv -o -name .git"
+while [[ $# -gt 0 ]]; do
+  case $1 in
+	  -d|--depth)
+		  depth=$2
+		  shift
+		  shift
+		  ;;
+	  -e|--exclude)
+		  #TODO differentiate between exclude files and exclude dirs with trailing /
+		  exclude+=" -o -name ${2}"
+		  shift
+		  shift
+		  ;;
+	  -i|--ignorecase)
+		  ignorecase=1
+		  shift
+		  ;;
+	  -h|--help)
+		  printf "projectfind:\nSearches a project for a keyword or phrase.
+Usage: $self [keyphrase] [arguments]
+\tprojectfind expects a keyphrase followed by any additional arguments.
+Arguments:
+\t-h, --help\n\t\tDisplay this manual
+\t-d <val>, --depth <val>\n\t\tThe number of directories deep a search should go. Default is 2.
+\t-e <val>, --exclude <val>\n\t\tDirectories that should be exluded from search. Default exclusions are $defaultExclude
+\t-i, --ignorecase\n\t\tMatch regardless of case
+Output:
+\tReturns a newline seperated list of file, line number, and line contents of each instance of the keyphrase across the project.
+Examples:
+\t\$projectfind import
+\t\tfinds all instances of \"import\" in files up to 2 directories below current working directory
+\t\$projectfind main -d 1
+\t\tfinds all instances of \"main\" only in the current working directory
+\t\$projectfind include -e Doxyfile -e bin
+\t\tfinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file
+\t\$projectfind todo -i
+\t\tCase agnostic search for \"todo\"
+\t\$projectfind \"todo\|TODO\"
+\t\tsearches for instances of \"todo\" or \"TODO\"
+\t\$projectfind include \<time.h\>
+\t\$projectfind include \"<time.h>\"
+\t\$projectfind \"include <time.h>\"
+\t\tThese all find any instance of \"include <time.h>\" across the project with depth 2
+"
+		  exit 1
+		  ;;
+	  -*|--*)
+		  echo "Unknown argument $1"
+		  exit 1
+		  ;;
+	  *)
+		  keyphrase+=$1" "
+		  shift
+		  ;;
+  esac
+done
+
 #find sucks ass and I can't seperate out binary files cleanly and still have this work with fnames containing whitespace
-#find . -maxdepth $depth -mindepth 1 -type f -exec grep -nw $1 {} +
-find . -maxdepth $depth -mindepth 1 \( -name venv -o -name .venv \) -prune -o -type f -exec grep -nw $1 {} +
+keyphrase=${keyphrase%?}
+#TODO add option for whole word search
+if [ $ignorecase = 1 ]; then
+	find . -maxdepth $depth -mindepth 1 \( $exclude \) -prune -o -type f -exec grep -ni $keyphrase {} +
+else
+	find . -maxdepth $depth -mindepth 1 \( $exclude \) -prune -o -type f -exec grep -n "$keyphrase" {} +
+fi
