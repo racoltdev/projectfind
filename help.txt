@@ -5,7 +5,7 @@ Usage: %s [keyphrase] [arguments]\n
 \tprojectfind expects a keyphrase followed by any additional arguments.\n
 \n
 Arguments:\n
-\t-h, --help\n\t\tDisplay this manual\n
+\t-h, --help\n\t\tDisplay this manual.\n
 \t-d <val>, --depth <val>\n\t\tThe number of directories deep a search should go. Default is 2.\n
 \t-e <val>, --exclude <val>\n\t\tAny file or directory glob that should be excluded from search.\n
 \t-i, --ignorecase\n\t\tCase agnostic search.\n
