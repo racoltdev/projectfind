@@ -5,4 +5,5 @@ if [ $# -eq 0 ]; then
 fi
 #find . -maxdepth $depth -mindepth 1 \( -name venv -o -name .venv \) -prune -o -exec grep -nw $1 {} +
 #find sucks ass and I can't seperate out binary files cleanly and still have this work with fnames containing whitespace
-find . -maxdepth $depth -mindepth 1 -type f -exec grep -nw $1 {} +
+#find . -maxdepth $depth -mindepth 1 -type f -exec grep -nw $1 {} +
+find . -maxdepth $depth -mindepth 1 \( -name venv -o -name .venv \) -prune -o -type f -exec grep -nw $1 {} +
