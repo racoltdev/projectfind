@@ -9,8 +9,14 @@ function manageExclusions {
 	fi
 }
 
+function readExclusionFile {
+	while IFS= read -r line; do
+    	manageExclusions $line
+	done < $1
+}
+
 self=$(basename $0)
-grepOpts="-nI"
+grepOpts="-nIH"
 partialWord=0
 depth=2
 excludeDirs="-wholename /dev/null"
@@ -21,8 +27,6 @@ fi
 
 #TODO add option to ignore defaults or just remove defaults
 #TODO add option to refer to file for project default exclusions
-defaultExclude="venv .venv .git"
-excludeDirs+=" -o -name venv -o -name .venv -o -name .git"
 while [[ $# -gt 0 ]]; do
   case $1 in
 	  -d|--depth)
@@ -35,7 +39,12 @@ while [[ $# -gt 0 ]]; do
 		  shift
 		  shift
 		  ;;
-	  -i|--ignoreCase)
+	  -r|--exclusionrules)
+		  readExclusionFile $2
+		  shift
+		  shift
+		  ;;
+	  -i|--ignorecase)
 		  grepOpts+="i"
 		  shift
 		  ;;
@@ -43,29 +52,42 @@ while [[ $# -gt 0 ]]; do
 		  partialWord=1;
 		  shift
 		  ;;
+	  -E|--extendedregex)
+		  grepOpts+="E"
+		  shift
+		  ;;
 	  -h|--help)
-		  printf "projectfind:\nSearches a project for a keyword or phrase.
+		  printf "projectfind\nSearches a project for a keyword or phrase.
+
 Usage: $self [keyphrase] [arguments]
 \tprojectfind expects a keyphrase followed by any additional arguments.
+
 Arguments:
 \t-h, --help\n\t\tDisplay this manual
 \t-d <val>, --depth <val>\n\t\tThe number of directories deep a search should go. Default is 2.
-\t-e <val>, --exclude <val>\n\t\tDirectories that should be exluded from search. Default exclusions are $defaultExclude
-\t-i, --ignoreCase\n\t\tCase agnostic search
-\t-p, --partial\n\t\tMatch keyphrase even if it is a part of another word
+\t-e <val>, --exclude <val>\n\t\tAny file or directory that should be excluded from search.
+\t-i, --ignorecase\n\t\tCase agnostic search.
+\t-p, --partial\n\t\tMatch keyphrase even if it is a part of another word.
+\t-r <filename>, --exclusionrules <filename>\n\t\tTakes a file containing a newline separated list as argument. Any files or directories in the list are excluded from the search. Useful if you search a project a lot or have some common system wide paths you exclude often.
+
 Output:
 \tReturns a newline seperated list of file, line number, and line contents of each instance of the keyphrase across the project.
+
 Examples:
 \t\$projectfind import
-\t\tfinds all instances of \"import\" in files up to 2 directories below current working directory
+\t\tFinds all instances of \"import\" in files up to 2 directories below current working directory
 \t\$projectfind main -d 1
-\t\tfinds all instances of \"main\" only in the current working directory
+\t\tFinds all instances of \"main\" only in the current working directory
 \t\$projectfind include -e Doxyfile -e bin/
-\t\tfinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file
+\t\tFinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file
 \t\$projectfind todo -i
 \t\tCase agnostic search for \"todo\"
-\t\$projectfind \"todo\|TODO\"
-\t\tsearches for instances of \"todo\" or \"TODO\"
+\t\$projectfind import -p
+\t\tFinds instances of \"import\" as well as other words like \"imported\".
+\t\$projectfind exec -r .gitignore
+\t\tFinds instances of \"exec\", excluding anything listed in .gitignore.
+\t\$projectfind \"todo|TODO\"
+\t\tSearches for instances of \"todo\" or \"TODO\"
 \t\$projectfind include \<time.h\>
 \t\$projectfind include \"<time.h>\"
 \t\$projectfind \"include <time.h>\"
@@ -98,6 +120,5 @@ excludeArgs+=" -o -type f ( $excludeFiles ) -prune"
 if [ $partialWord = 0 ]; then
 	grepOpts+="w"
 fi
-grepCMD="grep $grepOpts "$keyphrase" {} +"
 
-find $depthArgs $excludeArgs -o -type f -exec $grepCMD
+find $depthArgs $excludeArgs -o -type f -exec grep $grepOpts "$keyphrase" {} +
