@@ -17,20 +17,20 @@ Output:\n
 \n
 Examples:\n
 \t$projectfind import\n
-\t\tFinds all instances of \"import\" in files up to 2 directories below current working directory\n
+\t\tFinds all instances of \"import\" in files up to 2 directories below current working directory.\n
 \t$projectfind main -d 1\n
-\t\tFinds all instances of \"main\" only in the current working directory\n
+\t\tFinds all instances of \"main\" only in the current working directory.\n
 \t$projectfind include -e Doxyfile -e bin/\n
-\t\tFinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file\n
+\t\tFinds all instances of \"include\" to depth 2, ignoring the bin directory and Doxyfile file.\n
 \t$projectfind todo -i\n
-\t\tCase agnostic search for \"todo\"\n
+\t\tCase agnostic search for \"todo\".\n
 \t$projectfind import -p\n
 \t\tFinds instances of \"import\" as well as other words like \"imported\".\n
 \t$projectfind exec -r .gitignore\n
 \t\tFinds instances of \"exec\", excluding anything listed in .gitignore.\n
 \t$projectfind \"todo|TODO\"\n
-\t\tSearches for instances of \"todo\" or \"TODO\"\n
+\t\tSearches for instances of \"todo\" or \"TODO\".\n
 \t$projectfind include \<time.h\>\n
 \t$projectfind include \"<time.h>\"\n
 \t$projectfind \"include <time.h>\"\n
-\t\tThese all find any instance of \"include <time.h>\" across the project with depth 2\n
+\t\tThese all find any instance of \"include <time.h>\" across the project with depth 2.\n
