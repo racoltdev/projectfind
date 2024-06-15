@@ -14,7 +14,7 @@ function parseFileWith {
 	file=$2
 	pattern=$3
 	while IFS= read -r line; do
-    	$func "$line" $pattern
+		$func "$line" $pattern
 	done < $file
 }
 
@@ -29,7 +29,10 @@ excludeFiles="-wholename /dev/null"
 
 # if number of arguments is 0
 if [ $# -eq 0 ]; then
-	printf "projectfind: No arguments supplied.\n\targ1, required: string to match\n\targ2, optional: depth of directory search. default = 2\n"
+	printf "Missing required arguments\n"
+	helpFile=$(dirname $(readlink -f $0))"/help.txt"
+	parseFileWith printf $helpFile $self
+	exit 1
 fi
 
 # while number of arguments is greater than 0
