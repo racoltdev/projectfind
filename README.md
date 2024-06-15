@@ -42,6 +42,6 @@ projectfind [keyphrase] [arguments]</br>
 `$projectfind \"todo|TODO\"`</br>
 &emsp;Searches for instances of \"todo\" or \"TODO\".</br>
 `$projectfind include \<time.h\>`</br>
-`$projectfind include \"<time.h>\"`</br>
-`$projectfind \"include <time.h>\"`</br>
-&emsp;These all find any instance of \"include <time.h>\" across the project with depth 2.
+`$projectfind include "<time.h>"`</br>
+`$projectfind "include <time.h>"`</br>
+&emsp;These all find any instance of "include <time.h>" across the project with depth 2.
