@@ -1,24 +1,14 @@
 #!/usr/bin/bash
 
-function manageExclusions {
-	prepend=" -o -name"
-	if [ ${1:0-1} = '/' ]; then
-		excludeDirs+="$prepend ${1%?}"
-	else
-		excludeFiles+="$prepend $1"
-	fi
-}
+requiredArgs=1
+selfName=$(basename $0)
+selfDir=$(dirname $(readlink -f $0))
+selfPath=$selfDir"/"$selfName
+helpFile=$selfDir"/help.txt"
 
-function parseFileWith {
-	func=$1
-	file=$2
-	pattern=$3
-	while IFS= read -r line; do
-		$func "$line" $pattern
-	done < $file
-}
+source $selfDir"/argumenthandler"
+checkRequiredArgs $@
 
-self=$(basename $0)
 # "n" print line number, "I" ignore binary files, "H" force printing file name
 grepOpts="-nIH"
 partialWord=0
@@ -26,14 +16,6 @@ depth=2
 # It's easier to set defaults to this so that adding new items doesn't require checking if first exclusion or not
 excludeDirs="-wholename /dev/null"
 excludeFiles="-wholename /dev/null"
-
-# if number of arguments is 0
-if [ $# -eq 0 ]; then
-	printf "Missing required arguments\n"
-	helpFile=$(dirname $(readlink -f $0))"/help.txt"
-	parseFileWith printf $helpFile $self
-	exit 1
-fi
 
 # while number of arguments is greater than 0
 while [ $# -gt 0 ]; do
@@ -66,8 +48,7 @@ while [ $# -gt 0 ]; do
 		  shift
 		  ;;
 	  -h|--help)
-		  helpFile=$(dirname $(readlink -f $0))"/help.txt"
-		  parseFileWith printf $helpFile $self
+		  parseFileWith printf $helpFile $selfName
 		  exit 1
 		  ;;
 	  -*|--*)
