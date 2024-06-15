@@ -1,8 +1,8 @@
-projectfind\n
+projectfind / projectreplace\n
 Searches a project for a keyword or phrase.\n
 \n
 Usage: %s [keyphrase] [arguments]\n
-\tprojectfind expects a keyphrase followed by any additional arguments.\n
+\t%s expects a keyphrase followed by any additional arguments.\n
 \n
 Arguments:\n
 \t-h, --help\n\t\tDisplay this manual.\n

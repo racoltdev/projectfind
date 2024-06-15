@@ -1,0 +1,27 @@
+#! /usr/bin/bash
+
+function checkRequiredArgs {
+	if [ $# -lt $requiredArgs ]; then
+		printf "Missing required arguments\n"
+		parseFileWith printf $helpFile $selfName
+		exit 1
+	fi
+}
+
+function manageExclusions {
+	prepend=" -o -name"
+	if [ ${1:0-1} = '/' ]; then
+		excludeDirs+="$prepend ${1%?}"
+	else
+		excludeFiles+="$prepend $1"
+	fi
+}
+
+function parseFileWith {
+	func=$1
+	file=$2
+	pattern=$3
+	while IFS= read -r line; do
+		$func "$line" $pattern
+	done < $file
+}

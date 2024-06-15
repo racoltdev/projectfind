@@ -1,0 +1,62 @@
+#! /usr/bin/bash
+
+requiredArgs=2
+selfName=$(basename $0)
+selfDir=$(dirname $(readlink -f $0))
+selfPath=$selfDir"/"$selfName
+helpFile=$selfDir"/help.txt"
+
+source $selfDir"/argumenthandler"
+checkRequiredArgs $@
+
+keyphrase=$1
+replacePhrase=$2
+shift
+shift
+
+projectfindArgs="$@"
+
+matchOpts=
+partialWord="\b"
+sedOpts="-i"
+while [ $# -gt 0 ]; do
+	case $1 in
+		-d|--depth)
+			shift
+			shift
+			;;
+		-e|--exclude)
+			shift
+			shift
+			;;
+		-r|--exclusionrules)
+			shift
+			shift
+			;;
+		-i|--ignorecase)
+			matchOpts+=$1
+			shift
+			;;
+		-p|--partial)
+			partialWord=""
+			shift
+			;;
+		-E|--extendedregex)
+			sedOpts+=" -E"
+			shift
+			;;
+		-h|--help)
+			parseFileWith printf $helpFile $selfName
+			shift
+			exit 0
+			;;
+		*)
+			echo "Unknown argument $1"
+			exit 1
+			;;
+	esac
+done
+
+finds=$(projectfind $keyphrase $projectfindArgs | awk -F':' 'NR>1{print $1}')
+#echo $finds
+sed $sedOpts "s/$keyphrase$partialWord/$replacePhrase/ w /dev/stdout" $finds
