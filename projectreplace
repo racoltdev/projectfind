@@ -57,6 +57,6 @@ while [ $# -gt 0 ]; do
 	esac
 done
 
-finds=$(projectfind $keyphrase $projectfindArgs | awk -F':' 'NR>1{print $1}')
-#echo $finds
+# extracts just the filename from projectfind output and removes duplicates
+finds=$(projectfind $keyphrase $projectfindArgs | awk -F':' '{a[$1]++} END{for(fname in a) print fname}')
 sed $sedOpts "s/$keyphrase$partialWord/$replacePhrase/ w /dev/stdout" $finds
