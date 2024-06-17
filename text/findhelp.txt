@@ -1,4 +1,4 @@
-projectfind / projectreplace\n
+projectfind\n
 Searches a project for a keyword or phrase.\n
 \n
 Usage: %s [keyphrase] [arguments]\n

@@ -3,8 +3,7 @@
 requiredArgs=1
 selfName=$(basename $0)
 selfDir=$(dirname $(readlink -f $0))
-selfPath=$selfDir"/"$selfName
-helpFile=$selfDir"/findhelp.txt"
+helpFile=$(dirname $selfDir)"/text/findhelp.txt"
 
 source $selfDir"/argumenthandler"
 checkRequiredArgs $@
