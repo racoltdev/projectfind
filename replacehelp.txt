@@ -1,0 +1,36 @@
+projectreplace\n
+Replaces all instances of a phrase in a project with some other string.\n
+projectreplace is built off of projectfind. All arguments and examples here are similarly mirrored in projectfind.\n
+\n
+Usage: %s [keyphrase] [replace phrase] [arguments]\n
+\t%s expects a keyphrase, the string to replace it with, followed by any additional arguments.\n
+\n
+Arguments:\n
+\t-h, --help\n\t\tDisplay this manual.\n
+\t-d <val>, --depth <val>\n\t\tThe number of directories deep a search should go. Default is 2.\n
+\t-e <val>, --exclude <val>\n\t\tAny file or directory glob that should be excluded from search.\n
+\t-i, --ignorecase\n\t\tCase agnostic search.\n
+\t-p, --partial\n\t\tMatch and replace keyphrase even if it is a part of another word.\n
+\t-r <filename>, --exclusionrules <filename>\n\t\tTakes a file containing a newline separated list as argument. Any files or directories matched by globs in the list are excluded from the search. Useful if you search a project a lot or have some common system wide paths you exclude often.\n
+\n
+Output:\n
+\tReturns the content of each changed line in the project.\n
+\n
+Examples:\n
+\t$projectreplace import include\n
+\t\tFinds all instances of \"import\" in files up to 2 directories below current working directory and replaces it with \"include\".\n
+\t$projectreplace main notMain -d 1\n
+\t\tFinds and replaces all instances of \"main\" with \"notMain\" only in the current working directory.\n
+\t$projectreplace include import -e Doxyfile -e bin/\n
+\t\tFinds and replaces all instances of \"include\" with replace, except in the bin directory and Doxyfile file.\n
+\t$projectreplace todo TODO -i\n
+\t\tCase agnostic search for \"todo\" and replace all with \"TODO\".
+\t$projectreplace import Import -p\n
+\t\tFinds instances of \"import\" as well as other words like \"imported\" and replaces the matching part of the word with \"Import\".\n
+\t$projectreplace exec run -r .gitignore\n
+\t\tReplaces instances of \"exec\" with \"run\", excluding anything listed in .gitignore.\n
+\t$projectreplace \"todo\|TODO\" DONE\n
+\t$projectreplace \"todo|TODO\" DONE -E\n
+\t\tReplaces all \"todo\" and \"TODO\" with \"DONE\".\n
+\t$projectreplace \"include <time.h>\" \"include \\"mytime.h\\""\n
+\t\tReplace a string with whitespace and special characters.\n

@@ -4,7 +4,7 @@ requiredArgs=2
 selfName=$(basename $0)
 selfDir=$(dirname $(readlink -f $0))
 selfPath=$selfDir"/"$selfName
-helpFile=$selfDir"/help.txt"
+helpFile=$selfDir"/replacehelp.txt"
 
 source $selfDir"/argumenthandler"
 checkRequiredArgs $@
