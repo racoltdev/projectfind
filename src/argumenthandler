@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /bin/bash
 # Helper script for projectfind/projectreplace. Only intended to be used by projectfind internally
 
 function checkRequiredArgs {
