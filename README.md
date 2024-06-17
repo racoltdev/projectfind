@@ -43,7 +43,8 @@ Returns a newline seperated list of file, line number, and line contents of each
 &emsp;Finds instances of "import" as well as other words like \"imported\".</br>
 `$projectfind exec -r .gitignore`</br>
 &emsp;Finds instances of "exec" excluding anything listed in .gitignore.</br>
-`$projectfind \"todo|TODO\"`</br>
+`$projectfind "todo\|TODO"`</br>
+`$projectfind "todo|TODO" -E` </br>
 &emsp;Searches for instances of "todo" or "TODO".</br>
 `$projectfind include \<time.h\>`</br>
 `$projectfind include "<time.h>"`</br>
