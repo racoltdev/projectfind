@@ -45,7 +45,7 @@ while [ $# -gt 0 ]; do
 			shift
 			;;
 		-h|--help)
-			parseFileWith printf $helpFile $selfName
+			parseFileWith printf $helpFile $selfName | more
 			shift
 			exit 0
 			;;
